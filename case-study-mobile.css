@@ -1,0 +1,141 @@
+/* ==========================================================================
+   CASE STUDY: correzioni mobile (telefono)
+
+   Ordine di caricamento:
+   style.css → case-study.css → <tema>-fullscreen.css → case-study-mobile.css
+
+   Va caricato PER ULTIMO: alcune pagine hanno stili inline (width/height sugli
+   slider e sulle slide) che battono i CSS mobile dei temi, quindi qui si usa
+   !important solo dove serve a scavalcarli.
+   ========================================================================== */
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+@media (max-width: 900px) {
+
+    /* Titoli: ridimensionati sul telefono (il tema Misprint ha già il suo) */
+    :root { --cs-title-size: clamp(2.4rem, 11vw, 3.4rem); }
+    .section-title { margin-bottom: 14px; }
+
+    /* Testo di corpo: con line-height 1.2 i paragrafi lunghi sono pesanti da leggere */
+    .body-text { line-height: 1.45; font-size: 1rem; }
+
+    /* ---- SNAP -------------------------------------------------------------
+       Con "mandatory" le sezioni più alte dello schermo (il testo cresce)
+       su iPhone/Safari possono non scorrere fino in fondo. "proximity" aggancia
+       solo quando sei vicino a un inizio sezione.                            */
+    .scroll-container { scroll-snap-type: y proximity; }
+
+    /* ---- NAV: "Torna al portfolio" + titolo non devono scontrarsi --------- */
+    .back-link { display: inline-block; padding: 10px 0; }
+
+    /* ---- SLIDER ORIZZONTALI -----------------------------------------------
+       Refice ha width:60% / height:100% inline: su telefono lo slider restava
+       stretto e sproporzionato. Così occupa tutta la larghezza.             */
+    .edge-slider {
+        width: 100% !important;
+        height: auto !important;
+        overscroll-behavior-x: contain;   /* lo swipe orizzontale non trascina la pagina */
+        scroll-padding-inline: 6%;
+    }
+    .menu-slide, .product-slide, .fanzine-slide {
+        height: 46vh !important;
+        height: 46dvh !important;         /* batte i 65vh / 60vh inline di Refice */
+        width: auto !important;
+    }
+    .social-slide {                       /* post (4:5) e storie (9:16) di Refice */
+        height: 50vh !important;
+        height: 50dvh !important;
+        width: auto !important;
+    }
+
+    /* ---- PALETTE: 8 colori in colonna non devono schiacciarsi ------------- */
+    .big-palette-grid { height: auto !important; flex-direction: column; }
+    .color-block { flex: 1 0 auto; min-height: 56px; padding: 8px 12px; }
+
+    /* ---- ORDINE: titolo e testo prima, immagine dopo (in modo uniforme) ----
+       In alcune sezioni (Gooey "Functional Pop", Misprint "Genius Loci")
+       l'immagine veniva prima del testo nel codice.                        */
+    .split-section > .split-image { order: 2; }
+
+    /* ---- BOTTONE FINALE: non sbordare con testi lunghi --------------------- */
+    .next-project-btn {
+        box-sizing: border-box;
+        max-width: 100%;
+        padding-left: 28px;
+        padding-right: 28px;
+        text-align: center;
+        letter-spacing: 1.5px;
+    }
+}
+
+@media (max-width: 520px) {
+    .back-link { font-size: 0.72rem; letter-spacing: 0.8px; }
+    .project-title-nav {
+        max-width: 40vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 1rem !important;
+    }
+}
+
+/* Touch: niente zoom/rotazione "da hover" che resta appiccicato dopo un tap */
+@media (hover: none) {
+    .product-slide:hover, .menu-slide:hover, .fanzine-slide:hover { transform: none; }
+    .color-block:hover { flex: 1 0 auto; }
+}
+@media (max-width: 900px) {
+
+    /* --- TESTI PIÙ PICCOLI --- */
+    :root { 
+        /* Ridotto da clamp(2.4rem, 11vw, 3.4rem) */
+        --cs-title-size: clamp(2rem, 8vw, 2.8rem); 
+    }
+    .section-title { margin-bottom: 12px; }
+
+    .body-text { 
+        line-height: 1.45; 
+        font-size: 0.92rem; /* Ridotto da 1rem per non affaticare la lettura */
+    }
+
+    /* --- IMMAGINI E SLIDER RIDIMENSIONATI --- */
+    .split-image { width: 100%; height: auto; padding: 0 6% 20px; }
+    .split-image img { 
+        max-height: 35vh; /* Ridotto da 42vh */
+        max-height: 35dvh; 
+    }
+
+    .menu-slide, .product-slide, .fanzine-slide {
+        height: 38vh !important; /* Ridotto da 46vh */
+        height: 38dvh !important;         
+        width: auto !important;
+    }
+    
+    .social-slide {                       
+        height: 42vh !important; /* Ridotto da 50vh */
+        height: 42dvh !important;
+        width: auto !important;
+    }
+    
+    /* Riduzione collage images */
+    .collage-images img { 
+        max-height: 25vh; /* Ridotto da 30vh */
+        max-height: 25dvh; 
+        max-width: 100%; 
+    }
+}
+@media (max-width: 900px) {
+    /* Forza tutte le immagini negli slider (comprese quelle di Misprint) */
+    .edge-slider img {
+        height: 38vh !important;
+        height: 38dvh !important;
+        width: auto !important;
+    }
+    
+    /* Forza le immagini split battendo lo stile inline "max-height: 65vh" del codice HTML */
+    .split-image img {
+        max-height: 35vh !important;
+        max-height: 35dvh !important;
+    }
+}

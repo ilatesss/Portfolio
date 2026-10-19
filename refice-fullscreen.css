@@ -1,0 +1,147 @@
+/* ==========================================================================
+   CAFFÈ REFICE: tema (elegante, verde scuro e pesca)
+   La struttura sta in case-study.css; qui solo token e dettagli del brand.
+   ========================================================================== */
+:root {
+    --brand-refice: #1c3f3c; /* Verde scuro Refice */
+    --light-bg: #F8F7F3;
+    --refice-peach: #f4ae81;
+
+    --cs-bg: var(--light-bg);
+    --cs-title-size: clamp(2.8rem, 5vw, 5rem);
+    --cs-title-lh: 1;
+    --cs-title-ls: -0.5px;
+    --cs-hero-logo-h: 30vh;
+    --cs-slider-gap: 50px;
+    --cs-slide-h: 75vh;
+    --cs-palette-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    --cs-img-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* --- COLORI DI SFONDO --- */
+.bg-brand { background-color: var(--brand-refice); color: #fff; }
+.bg-light { background-color: var(--light-bg); }
+.bg-dark  { background-color: #2F3E44; }
+.bg-paper { background-color: #efefef; }
+.text-light { color: var(--refice-peach) !important; }
+
+/* --- NAV TRASPARENTE (inverte il colore sullo sfondo) --- */
+.transparent-nav {
+    background: transparent !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    mix-blend-mode: difference;
+    z-index: 1000;
+}
+.transparent-nav a, .project-title-nav { color: #fff; }
+.project-title-nav {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-style: italic;
+    letter-spacing: 1px;
+}
+
+/* --- HERO --- */
+.hero-content h1 {
+    margin: 0 0 10px;
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 6vw, 6.5rem);
+    line-height: 1;
+    color: var(--refice-peach);
+}
+
+/* --- SPLIT: le pagine PDF hanno l'ombra di un oggetto reale --- */
+.split-image img {
+    box-shadow: var(--cs-img-shadow);
+    border-radius: 4px;
+}
+
+/* --- SLIDER: menu, social, stickers --- */
+.menu-slide {
+    border-radius: 8px;
+    box-shadow: -15px 20px 50px rgba(0, 0, 0, 0.15);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.menu-slide:hover { transform: scale(1.03) translateY(-10px); }
+
+.social-slider { gap: 30px; }
+.social-slide {
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.social-slide:hover { transform: scale(1.03) translateY(-10px); }
+.feed-img  { height: 45vh; aspect-ratio: 4 / 5; }
+.story-img { height: 65vh; aspect-ratio: 9 / 16; border-radius: 12px; }
+
+.sticker-slider { gap: 40px; }
+.sticker-img {
+    height: 45vh;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.15));
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sticker-img:hover { transform: scale(1.08) rotate(3deg); }
+
+/* --- COLLAGE --- */
+.collage-images { background: #e8e8e8; }
+
+/* --- CHIUSURA --- */
+.end-title { color: #fff; }
+.next-project-btn {
+    display: inline-block;
+    margin-top: 40px;
+    padding: 15px 40px;
+    border: 2px solid var(--refice-peach);
+    border-radius: 40px;
+    color: var(--refice-peach);
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: background 0.3s, color 0.3s;
+}
+.next-project-btn:hover { background: var(--refice-peach); color: var(--brand-refice); }
+
+/* --- MOBILE --- */
+@media (max-width: 900px) {
+    .hero-content h1 { font-size: 3rem; }
+    .hero-logo { max-width: 180px; }
+
+    .feed-img   { height: 35vh; height: 35dvh; }
+    .story-img  { height: 48vh; height: 48dvh; }
+    .sticker-img { height: 30vh; height: 30dvh; }
+}
+
+/* --- SUGGERIMENTO "SCORRI" --- */
+.scroll-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    padding: 8px 18px;
+    border: 1px solid rgba(28, 63, 60, 0.3);
+    border-radius: 30px;
+    background: rgba(28, 63, 60, 0.05);
+    color: var(--brand-refice);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.scroll-hint span { font-size: 1.1rem; line-height: 1; }
+.scroll-hint--peach {
+    border-color: rgba(244, 174, 129, 0.3);
+    background: rgba(244, 174, 129, 0.05);
+    color: var(--refice-peach);
+}
+
+/* --- ETICHETTE DELLA PALETTE (hex + nome) --- */
+.swatch-label { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.swatch-hex { font-size: 0.75rem; opacity: 0.85; letter-spacing: 1px; }

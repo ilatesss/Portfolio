@@ -1,0 +1,414 @@
+/* ==========================================================================
+   CASE STUDY: base condivisa delle pagine progetto (snap a schermo intero)
+
+   Ordine di caricamento:  style.css → case-study.css → <tema>-fullscreen.css
+
+   Qui sta solo la STRUTTURA (snap, split, palette, slider, collage, mobile).
+   Ogni tema imposta i token --cs-* e tutto ciò che è proprio del brand:
+   colori, nav, bottone, aspetto delle slide.
+   ========================================================================== */
+
+:root {
+    --cs-bg: #F8F7F3;
+    --cs-text: #181717;
+    --cs-display: var(--font-display);
+    --cs-body: var(--font-body);
+
+    --cs-title-size: clamp(2.8rem, 6vw, 5.5rem);
+    --cs-title-lh: 0.95;
+    --cs-title-ls: -1px;
+    --cs-title-weight: 400;
+    --cs-title-transform: none;
+    --cs-body-size: 1.1rem;
+
+    --cs-hero-logo-h: 34vh;
+    --cs-slider-gap: 40px;
+    --cs-slide-h: 70vh;
+
+    --cs-palette-h: 35vh;
+    --cs-palette-radius: 12px;
+    --cs-palette-border: 0;
+    --cs-palette-shadow: none;
+
+    --cs-img-radius: 4px;
+    --cs-img-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* --- BASE ---------------------------------------------------------------- */
+body.fullscreen-case-study {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* lo scroll lo gestisce .scroll-container */
+    background: var(--cs-bg);
+    color: var(--cs-text);
+    font-family: var(--cs-body);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* --- SNAP SCROLL ---------------------------------------------------------- */
+.scroll-container {
+    height: 100vh;
+    height: 100dvh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    
+}
+.scroll-container::-webkit-scrollbar { display: none; }
+
+.snap-section {
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+}
+
+/* --- NAV: struttura comune (l'aspetto lo decide il tema) ------------------- */
+.back-link {
+    text-decoration: none;
+    font-family: var(--cs-body);
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+.back-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* --- HERO E CHIUSURA ------------------------------------------------------ */
+.hero-section, .end-section { align-items: center; justify-content: center; }
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    padding: 80px 20px 70px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: auto; /* style.css lo blocca per la hero della home */
+}
+
+.hero-logo {
+    display: block;
+    width: auto; height: auto;
+    max-width: 90%;
+    max-height: var(--cs-hero-logo-h);
+    object-fit: contain;
+    margin-bottom: 24px;
+}
+
+.project-subtitle {
+    margin: 0;
+    font-family: var(--cs-body);
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--cs-body);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: inherit;
+    animation: cs-nudge 2s infinite;
+    pointer-events: none;
+}
+
+/* Striscia info progetto: ruolo, anno, deliverable.
+   Le voci mancanti si omettono: la striscia si adatta. */
+.project-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 40px;
+    margin: 26px 0 0;
+    padding: 16px 0 0;
+    max-width: min(780px, 92%);
+    border-top: 1px solid rgba(128, 128, 128, 0.45);
+    border-top: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+    text-align: left;
+}
+.project-meta dt {
+    margin: 0 0 3px;
+    font-family: var(--cs-body);
+    font-size: 0.78rem;
+    font-weight: 400;
+    opacity: 0.65;
+}
+.project-meta dd {
+    margin: 0;
+    font-family: var(--cs-body);
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.35;
+}
+
+/* Chiusura: titolo, bottone "prossimo progetto" e link secondario */
+.end-title {
+    margin: 0;
+    font-family: var(--cs-display);
+    font-weight: var(--cs-title-weight);
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1.2;
+}
+.end-secondary {
+    margin-top: 22px;
+    font-family: var(--cs-body);
+    font-size: 0.9rem;
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+.end-secondary:hover { text-decoration-thickness: 2px; }
+
+/* --- TIPOGRAFIA ----------------------------------------------------------- */
+.section-title {
+    margin: 0 0 20px;
+    font-family: var(--cs-display);
+    font-weight: var(--cs-title-weight);
+    font-size: var(--cs-title-size);
+    line-height: var(--cs-title-lh);
+    letter-spacing: var(--cs-title-ls);
+    text-transform: var(--cs-title-transform);
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+.body-text {
+    margin: 0 0 1.1em;
+    font-family: var(--cs-body);
+    font-size: var(--cs-body-size);
+    line-height: 1.2;
+    color: inherit; /* prende il colore della sezione: niente grigio su fondo scuro */
+}
+.body-text:last-child { margin-bottom: 0; }
+.ai-note { margin: 4px 0 0; font-size: 0.82rem; line-height: 1.5; font-style: italic; }
+
+/* --- SPLIT SCREEN --------------------------------------------------------- */
+/* Centratura con margin:auto invece di justify-content:center: se il testo è
+   più alto dello schermo si scorre invece di venire tagliato in alto. */
+.split-text {
+    width: 40%;
+    height: 100%;
+    padding: 100px 6% 6%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+.split-text::-webkit-scrollbar { display: none; }
+.split-text > :first-child { margin-top: auto; }
+.split-text > :last-child  { margin-bottom: auto; }
+
+.split-image {
+    position: relative;
+    width: 60%;
+    height: 100%;
+    padding: 100px 5% 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.split-image img {
+    width: 100%;
+    max-height: 75vh;
+    object-fit: contain;
+}
+
+/* --- PALETTE -------------------------------------------------------------- */
+.content-centered {
+    margin: auto;
+    width: 100%;
+    max-width: 1300px;
+    height: 100%;
+    padding: 100px 5% 5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+.content-centered .body-text { max-width: 600px; margin-left: auto; margin-right: auto; }
+
+.big-palette-grid {
+    display: flex;
+    height: var(--cs-palette-h);
+    margin-top: 40px;
+    border: var(--cs-palette-border);
+    border-radius: var(--cs-palette-radius);
+    box-shadow: var(--cs-palette-shadow);
+    overflow: hidden;
+}
+.color-block {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 20px;
+    transition: flex 0.4s ease;
+    color: #fff;
+    font-family: var(--cs-body);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.color-block:hover { flex: 1.5; }
+
+/* --- SEZIONI CON SLIDER ORIZZONTALE (edge to edge) ------------------------ */
+.menu-section, .social-section, .sticker-section,
+.fanzine-section, .products-section {
+    flex-direction: row;
+    align-items: center;
+}
+.menu-intro, .social-text, .sticker-intro,
+.fanzine-intro, .products-intro {
+    flex: none;
+    width: 35%;
+    padding: 100px 2% 5% 6%;
+    z-index: 10;
+}
+.edge-slider {
+    width: 65%;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    align-items: center;
+    gap: var(--cs-slider-gap);
+    padding: 0 10% 0 5%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.edge-slider::-webkit-scrollbar { display: none; }
+.edge-slider > * { flex: 0 0 auto; scroll-snap-align: center; }
+
+.menu-slide, .product-slide, .fanzine-slide { height: var(--cs-slide-h); width: auto; }
+
+/* --- COLLAGE (variante a flusso: Refice, Scuderia) ------------------------ */
+.collage-section { flex-direction: row; align-items: center; }
+.collage-images {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 100px 40px 40px;
+}
+.collage-images img {
+    position: relative;
+    width: auto;
+    max-width: 90%;
+    max-height: 42vh;
+    object-fit: contain;
+    border-radius: var(--cs-img-radius);
+    box-shadow: var(--cs-img-shadow);
+}
+.collage-images .img-1 { align-self: flex-start; margin-left: 5%; }
+.collage-images .img-2 { align-self: flex-end; margin-right: 5%; margin-top: -12%; z-index: 2; }
+
+/* --- ANIMAZIONI ----------------------------------------------------------- */
+@keyframes cs-nudge {
+    0%, 100% { transform: translate(-50%, 0); }
+    50%      { transform: translate(-50%, -8px); }
+}
+@keyframes cs-float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+}
+
+/* --- MOBILE ---------------------------------------------------------------
+   Sotto i 900px le sezioni crescono con il contenuto (min-height invece di
+   height): niente più testo tagliato. Lo snap continua a funzionare.       */
+@media (max-width: 900px) {
+    .snap-section {
+        flex-direction: column;
+        justify-content: center;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding-top: 72px; /* spazio per la nav fissa */
+    }
+    .hero-section, .end-section { padding-top: 0; }
+    .hero-content { height: auto; min-height: 100vh; min-height: 100dvh; padding: 90px 20px 80px; }
+
+    .split-text {
+        width: 100%; height: auto;
+        padding: 16px 6% 20px;
+        text-align: center;
+        overflow: visible;
+    }
+    .split-text > :first-child { margin-top: 0; }
+    .split-text > :last-child  { margin-bottom: 0; }
+    .split-image { width: 100%; height: auto; padding: 0 6% 28px; }
+    .split-image img { max-height: 42vh; max-height: 42dvh; }
+
+    .content-centered { height: auto; padding: 16px 5% 40px; }
+    .big-palette-grid { flex-direction: column; height: 50vh; height: 50dvh; }
+    .color-block { align-items: center; padding: 0; }
+
+    .menu-intro, .social-text, .sticker-intro, .fanzine-intro, .products-intro {
+        width: 100%;
+        padding: 16px 6% 8px;
+        text-align: center;
+    }
+    .edge-slider { width: 100%; height: auto; padding: 12px 6% 44px; }
+    .menu-slide, .product-slide, .fanzine-slide { height: 46vh; height: 46dvh; }
+
+    .collage-images { width: 100%; height: auto; flex-direction: column; gap: 14px; padding: 0 6% 32px; }
+    .collage-images img { max-height: 30vh; max-height: 30dvh; max-width: 100%; }
+    .collage-images .img-1, .collage-images .img-2 { align-self: center; margin: 0; }
+
+    .project-meta { text-align: center; gap: 10px 28px; }
+}
+
+/* --- FRECCE DEGLI SLIDER (aggiunte da script.js) ---------------------------
+   Posizione (left/top) impostata via JS sui bordi dello slider.            */
+.slider-arrow {
+    position: absolute;
+    z-index: 20;
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: #181717;
+    font-family: var(--cs-body);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+    transition: transform 0.2s, opacity 0.25s, background 0.2s;
+}
+.slider-arrow:hover:not(:disabled) { transform: scale(1.08); background: #fff; }
+.slider-arrow:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
+.slider-arrow:disabled { opacity: 0; pointer-events: none; }
+.slider-arrow.is-hidden { display: none; }
+.edge-slider:focus-visible { outline: 2px dashed rgba(128, 128, 128, 0.6); outline-offset: -6px; }
+
+/* Su telefono/tablet touch si scorre con il dito: niente frecce */
+@media (max-width: 900px), (hover: none) {
+    .slider-arrow { display: none; }
+}

@@ -1,0 +1,246 @@
+/* ==========================================================================
+   MISPRINT FESTIVAL: tema (brutalista, colori acidi)
+   La struttura sta in case-study.css; qui solo token e dettagli del brand.
+   ========================================================================== */
+
+/* Se hai il file del font BADTYP, scommenta e controlla il percorso
+@font-face {
+    font-family: 'BADTYP';
+    src: url('assets/fonts/BADTYP.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+*/
+
+:root {
+    --m-indaco: #47539b;
+    --m-magenta: #e83a8d;
+    --m-lime: #b7cd1f;
+    --m-arancio: #f4963a;
+    --m-crema: #f6f8e8;
+    --m-antracite: #2f3e44;
+
+    --font-punk: 'BADTYP', 'Syne', sans-serif; /* fallback su Syne se BADTYP non carica */
+    --font-tech: 'American Typewriter', 'Courier New', Courier, monospace;
+
+    --cs-bg: var(--m-crema);
+    --cs-text: var(--m-antracite);
+    --cs-display: var(--font-punk);
+    --cs-body: var(--font-tech);
+    --cs-title-size: clamp(2.2rem, 3.5vw, 4rem);
+    --cs-title-lh: 1.1;
+    --cs-title-ls: 0;
+    --cs-title-weight: normal;
+    --cs-title-transform: uppercase;
+    --cs-hero-logo-h: 26vh;
+    --cs-slider-gap: 60px;
+    --cs-slide-h: 70vh;
+    --cs-palette-h: 40vh;
+    --cs-palette-radius: 0;
+    --cs-palette-border: 3px solid var(--m-antracite);
+}
+
+/* --- COLORI DI SFONDO E CONTRASTI --- */
+.bg-crema { background-color: var(--m-crema); color: var(--m-antracite); }
+
+.bg-indaco { background-color: var(--m-indaco); color: var(--m-crema); }
+.bg-indaco .section-title { color: var(--m-lime); text-shadow: 2px 2px 0 var(--m-antracite); }
+.bg-indaco p { color: var(--m-crema); }
+
+.bg-antracite { background-color: var(--m-antracite); color: var(--m-crema); }
+
+.bg-lime { background-color: var(--m-lime); color: var(--m-antracite); }
+.bg-lime .section-title { color: var(--m-indaco); }
+.bg-lime .body-text { font-weight: bold; }
+
+.bg-magenta { background-color: var(--m-magenta); color: var(--m-crema); }
+.bg-magenta h2 { color: var(--m-crema); text-shadow: 3px 3px 0 var(--m-antracite); }
+
+/* --- NAV (brutalista e leggibile) --- */
+.transparent-nav {
+    background: var(--m-crema) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    border-bottom: 3px solid var(--m-antracite) !important;
+    box-shadow: 0 4px 0 var(--m-magenta) !important;
+    z-index: 1000;
+}
+.transparent-nav a, .project-title-nav { color: var(--m-antracite) !important; }
+.back-link { font-weight: bold; transition: color 0.2s; }
+.back-link:hover { color: var(--m-magenta) !important; }
+
+/* --- OMBRE NETTE E BORDI --- */
+.brutal-shadow {
+    border: 2px solid var(--m-antracite);
+    box-shadow: 12px 12px 0 var(--m-magenta);
+    border-radius: 0 !important;
+}
+.bg-indaco .brutal-shadow { box-shadow: 12px 12px 0 var(--m-lime); }
+.bg-antracite .brutal-shadow { border-color: var(--m-crema); box-shadow: 12px 12px 0 var(--m-arancio); }
+
+/* --- HERO --- */
+.academic-badge {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: 2px solid var(--m-antracite);
+    background: var(--m-lime);
+    color: var(--m-antracite);
+    font-family: var(--font-tech);
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 6px 6px 0 var(--m-antracite);
+}
+.project-subtitle {
+    padding: 5px 15px;
+    background: var(--m-antracite);
+    color: var(--m-crema);
+    font-family: var(--font-punk);
+    font-size: 1.8rem;
+    letter-spacing: 0;
+}
+.floating-quote {
+    position: absolute;
+    right: 15%; top: 20%;
+    width: 150px;
+    animation: cs-float 3s infinite;
+}
+.scroll-indicator { font-weight: bold; }
+.project-meta { border-top: 3px solid var(--m-antracite); }
+
+/* --- STORYTELLING (dentro lo split) --- */
+.storytelling-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid currentColor;
+}
+.story-block h4 {
+    margin: 0 0 5px;
+    font-family: var(--font-punk);
+    font-size: 1.4rem;
+    color: var(--m-magenta);
+    text-transform: uppercase;
+}
+.bg-indaco .story-block h4 { color: var(--m-lime); }
+.story-block p { margin: 0; font-family: var(--font-tech); font-size: 0.95rem; }
+
+/* --- PALETTE --- */
+.color-block {
+    flex-direction: column;
+    align-items: center;
+    font-weight: bold;
+    border-right: 2px solid var(--m-antracite);
+}
+.color-block:last-child { border-right: none; }
+.hex { margin-bottom: 5px; font-size: 0.8rem; opacity: 0.7; }
+
+/* --- MANUALE FANZINE --- */
+.fanzine-slide {
+    object-fit: contain;
+    background: #fff;
+    transition: transform 0.4s;
+}
+.fanzine-slide:hover { transform: scale(1.05) rotate(-2deg); }
+
+/* --- COLLAGE POSTER E WEB UI ---------------------------------------------
+   Posizioni esplicite in percentuale (niente margini negativi): le tre
+   immagini si sovrappongono sempre allo stesso modo.                      */
+.collage-section .collage-images {
+    display: block;
+    padding: 0;
+    gap: 0;
+}
+.collage-section .collage-images img {
+    position: absolute;
+    max-width: none;
+    max-height: none;
+    object-fit: contain;
+    background: #fff;
+}
+.collage-images .img-poster { left: 4%;  top: 15%;    height: 56vh; width: auto; z-index: 2; }
+.collage-images .img-web1   { right: 4%; top: 17%;    width: 56%;   height: auto; z-index: 1; }
+.collage-images .img-web2   { left: 32%; bottom: 5%;  height: 46vh; width: auto; z-index: 3; }
+
+/* --- CHIUSURA --- */
+.end-title { color: var(--m-crema); text-transform: uppercase; }
+.next-project-btn {
+    display: inline-block;
+    margin-top: 40px;
+    padding: 15px 40px;
+    border: 2px solid var(--m-antracite);
+    background: var(--m-antracite);
+    color: var(--m-crema);
+    text-decoration: none;
+    font-family: var(--font-punk);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    box-shadow: 8px 8px 0 var(--m-lime);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.next-project-btn:hover { transform: translate(4px, 4px); box-shadow: 4px 4px 0 var(--m-lime); }
+
+/* --- MOBILE --- */
+@media (max-width: 900px) {
+    .hero-logo { max-width: 200px; }
+    .floating-quote { display: none; }
+    .section-title { font-size: 2.2rem; }
+
+    .storytelling-grid { text-align: left; }
+
+    .color-block { border-right: none; border-bottom: 2px solid var(--m-antracite); }
+    .color-block:last-child { border-bottom: none; }
+
+    /* collage: fila scorrevole */
+    .collage-section .collage-images {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 16px;
+        padding: 0 6% 32px 6%;
+        overflow-x: auto;
+    }
+    .collage-section .collage-images img { position: relative; flex: 0 0 auto; }
+    .collage-images .img-poster,
+    .collage-images .img-web1,
+    .collage-images .img-web2 {
+        inset: auto;
+        height: 38vh; height: 38dvh;
+        width: auto;
+        margin: 0;
+    }
+}
+
+/* --- SUGGERIMENTO "SCORRI" --- */
+.scroll-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    padding: 8px 18px;
+    border: 2px solid var(--m-antracite);
+    background: var(--m-lime);
+    box-shadow: 3px 3px 0 var(--m-antracite);
+    color: var(--m-antracite);
+    font-family: var(--font-tech);
+    font-weight: bold;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.scroll-hint--crema { background: var(--m-crema); }
+
+/* --- FRECCE SLIDER (versione brutalista) --- */
+.slider-arrow {
+    border: 2px solid var(--m-antracite);
+    border-radius: 0;
+    background: var(--m-lime);
+    color: var(--m-antracite);
+    font-weight: bold;
+    box-shadow: 4px 4px 0 var(--m-antracite);
+}
+.slider-arrow:hover:not(:disabled) { transform: translate(2px, 2px); background: var(--m-lime); box-shadow: 2px 2px 0 var(--m-antracite); }

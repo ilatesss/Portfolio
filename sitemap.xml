@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <url>
+       <loc>https://ilariamariatesta.vercel.app/</loc>
+       <lastmod>2026-10-25T11:50:19+00:00</lastmod>
+       <priority>1.0000</priority>
+  </url>
+  <url>
+       <loc>https://ilariamariatesta.vercel.app/assets/ilariamariatesta_cv.pdf</loc>
+       <lastmod>2026-10-25T11:50:19+00:00</lastmod>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://ilariamariatesta.vercel.app/progetto-refice.html</loc>
+       <lastmod>2026-10-25T11:50:19+00:00</lastmod>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://ilariamariatesta.vercel.app/progetto-scuderia.html</loc>
+       <lastmod>2026-10-25T11:50:19+00:00</lastmod>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://ilariamariatesta.vercel.app/progetto-misprint.html</loc>
+       <lastmod>2026-10-25T11:50:19+00:00</lastmod>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://ilariamariatesta.vercel.app/index.html</loc>
+       <lastmod>2026-10-25T11:50:19+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+</urlset>

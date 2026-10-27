@@ -1171,12 +1171,12 @@ width: clamp(500px, 85%, 980px);
 .mark-card { cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
 .mark-card:focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 3px; }
 
-.mark-card.is-color .mark-preview .mark-default { opacity: 0; transform: scale(1.04); }
-.mark-card.is-color .mark-preview .mark-hover { opacity: 1; transform: scale(1.04); }
+.mark-card.is-color .mark-preview .mark-default { opacity: 0; transform: scale(1.0); }
+.mark-card.is-color .mark-preview .mark-hover { opacity: 1; transform: scale(1.0); }
 
 /* Loghi con una sola versione: grigi di default, a colori al click */
 .mark-preview img:only-child { filter: grayscale(100%); opacity: 0.85; }
-.mark-card.is-color .mark-preview img:only-child { filter: grayscale(0%); opacity: 1; transform: scale(1.06); }
+.mark-card.is-color .mark-preview img:only-child { filter: grayscale(0%); opacity: 1; transform: scale(1.0); }
 
 .marks-hint { margin: -8px 0 22px; font-family: var(--font-body); font-size: 0.82rem; color: var(--text-muted); }
 

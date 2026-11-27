@@ -2333,3 +2333,37 @@ body.lb-open { overflow: hidden; }
 #me.me-layout::before { content:''; position:absolute; inset:0; left:50%; width:100vw; transform:translateX(-50%); background:linear-gradient(180deg,#ffe5ec 0%,#fff1f4 42%,var(--bg-white) 100%); z-index:-1; pointer-events:none; }
 @media(max-width:768px){.manifesto-section{padding:72px 7% 42px;}.manifesto-text{font-size:clamp(1.45rem,5.4vw,2rem);}.manifesto-ornament{margin-bottom:20px;}}
 @media(prefers-reduced-motion:reduce){.note-typed::after{display:none;}}
+
+/* Costellazione di segni digitati: solo decorazione, nessun listener aggiuntivo. */
+.manifesto-section { position:relative; isolation:isolate; overflow:hidden; }
+.diary-constellation { position:absolute; inset:0; z-index:-1; pointer-events:none; overflow:hidden; user-select:none; }
+.diary-mark { position:absolute; display:block; white-space:nowrap; color:#7a2021; font-family:Georgia,"Segoe UI Symbol","Noto Sans Symbols 2",serif; font-weight:400; line-height:1; opacity:var(--ink,.19); font-size:var(--size,18px); transform:rotate(var(--tilt,0deg)); }
+.diary-mark-1 { left:3%; top:13%; --size:clamp(20px,3vw,38px); --tilt:-12deg; --ink:.24; }
+.diary-mark-2 { left:19%; top:5%; --size:15px; --ink:.28; }
+.diary-mark-3 { right:6%; top:17%; --size:35px; --ink:.16; }
+.diary-mark-4 { right:12%; bottom:8%; --size:clamp(16px,2.4vw,30px); --tilt:-8deg; --ink:.24; }
+.diary-mark-5 { left:4%; bottom:27%; --size:18px; }
+.diary-mark-6 { right:3%; top:50%; --size:24px; --ink:.23; }
+.diary-mark-7 { left:10%; bottom:9%; --size:16px; --tilt:9deg; }
+.diary-mark-8 { left:45%; top:8%; --size:22px; --ink:.16; }
+.diary-mark-9 { right:27%; top:4%; --size:17px; }
+.diary-mark-10 { left:36%; bottom:5%; --size:18px; }
+.diary-mark-11 { right:4%; bottom:35%; --size:24px; --ink:.15; }
+.diary-mark-12 { left:2%; top:48%; --size:16px; }
+.diary-mark-13 { right:19%; top:27%; --size:15px; --ink:.09; }
+.diary-mark-14 { left:67%; bottom:3%; --size:22px; }
+.diary-mark-15 { left:7%; top:32%; --size:16px; --ink:.12; }
+@keyframes diary-breathe { 0%,100% { opacity:var(--ink,.19); } 50% { opacity:.055; } }
+.note-running .diary-mark:is(.diary-mark-2,.diary-mark-3,.diary-mark-6,.diary-mark-8) { animation:diary-breathe 7s ease-in-out infinite alternate; }
+.note-running .diary-mark-3 { animation-delay:-2s; }
+.note-running .diary-mark-6 { animation-delay:-4s; }
+@media(max-width:768px) {
+ .diary-mark-1 { left:5%; top:4%; --size:21px; }
+ .diary-mark-3 { right:5%; top:5%; --size:23px; }
+ .diary-mark-4 { right:6%; bottom:3%; --size:18px; }
+ .diary-mark-7 { left:7%; bottom:4%; --size:15px; }
+ .diary-mark:is(.diary-mark-5,.diary-mark-6,.diary-mark-11,.diary-mark-12,.diary-mark-13,.diary-mark-15) { display:none; }
+ .diary-mark-10 { left:43%; bottom:2%; --size:12px; }
+ .diary-mark-14 { display:none; }
+}
+@media(prefers-reduced-motion:reduce) { .note-running .diary-mark { animation:none !important; } }

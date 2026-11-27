@@ -2372,3 +2372,29 @@ body.lb-open { overflow: hidden; }
 .ux-back-top[hidden] { display:none; }
 .ux-back-top { position:fixed; right:18px; bottom:calc(18px + env(safe-area-inset-bottom,0px)); z-index:900; width:44px; height:44px; display:grid; place-items:center; border:1px solid var(--accent-dark); border-radius:50%; background:var(--bg-paper); color:var(--accent-dark); text-decoration:none; font-size:1.3rem; }
 .ux-back-top:focus-visible {outline:2px solid currentColor;outline-offset:3px;}
+
+/* Manifesti: sfondo a tutta pagina, senza cornici interne. */
+.manifesto-section {
+    --poster-bg: var(--bg-pink);
+    --poster-ink: var(--accent-dark);
+    width: 100%; max-width: none; margin: 0;
+    min-height: 100vh; min-height: 100svh;
+    display: flex; flex-direction: column; justify-content: center;
+    background: var(--poster-bg); color: var(--poster-ink);
+    padding: clamp(40px, 7vw, 100px) 8%;
+}
+.manifesto-section[data-poster="1"], .manifesto-section[data-poster="4"] { --poster-bg: var(--bg-white); }
+.manifesto-section[data-poster="2"], .manifesto-section[data-poster="5"] { --poster-bg: var(--accent-dark); --poster-ink: var(--bg-pink); }
+.manifesto-section .manifesto-ornament, .manifesto-section .manifesto-controls { color: var(--poster-ink); }
+.manifesto-section .manifesto-text { flex: 1 0 auto; align-items: stretch; }
+.manifesto-section .manifesto-text .quote-item[data-poster] {
+    background: none; border: 0; border-radius: 0; box-shadow: none; outline: 0;
+    overflow: visible; color: var(--poster-ink);
+}
+.manifesto-section .manifesto-text .quote-item[data-poster]::before {
+    animation: none !important; transition: none;
+    transform: translate(-50%, -50%);
+}
+@media (max-width: 768px) {
+    .manifesto-section { padding: 48px 7%; }
+}

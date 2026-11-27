@@ -784,6 +784,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const index = section?.querySelector('.manifesto-index');
         const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
         let current = 0, visible = false, paused = false, timer = null;
+        if (section) section.dataset.poster = String(current);
         function stop() {
             clearTimeout(timer);
             timer = null;
@@ -802,6 +803,7 @@ document.addEventListener('DOMContentLoaded', () => {
             items[current].classList.remove('is-active');
             items[current].setAttribute('aria-hidden', 'true');
             current = (current + direction + items.length) % items.length;
+            if (section) section.dataset.poster = String(current);
             if (index) index.textContent = `${String(current + 1).padStart(2, '0')} / ${String(items.length).padStart(2, '0')}`;
             items[current].classList.add('is-active');
             items[current].removeAttribute('aria-hidden');

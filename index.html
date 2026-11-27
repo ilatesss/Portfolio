@@ -195,10 +195,16 @@
          MANIFESTO & ABOUT ME
          ========================================== -->
     <section class="section-padding manifesto-section">
+        <div class="manifesto-ornament" aria-hidden="true"><span>✳</span><span>✦</span><span>✳</span></div>
         <h2 class="manifesto-text reveal" id="dynamic-quote">
             <span class="quote-item is-active">“Collect and understand and use as many codes of visual culture as possible.” <br>
             <span class="italic-accent"> — Tracy Ma</span></span>
         </h2>
+        <div class="manifesto-controls" hidden>
+            <span class="manifesto-rule" aria-hidden="true"></span>
+            <button type="button" class="manifesto-pause" aria-label="Metti in pausa le citazioni">Ⅱ</button>
+            <button type="button" class="manifesto-next" aria-label="Citazione successiva">→</button>
+        </div>
     </section>
  
     <section id="me" class="section-padding me-layout">
@@ -259,25 +265,25 @@
             Una selezione di progetti cartacei e sperimentali di cui ho curato ogni aspetto: impaginazione, cura dei file di stampa, illustrazioni... Clicca su una copertina per aprire il volume sul tavolo da lettura e sfogliarne le pagine.
         </p>
  
-        <p class="editorial-swipe-hint"><span aria-hidden="true">↔</span> Scorri le copertine, poi tocca per sfogliare</p>
+        <p class="editorial-swipe-hint"><span aria-hidden="true">↔</span> Scorri le copertine per esplorare i libri</p>
 
         <!-- MENSOLA DELLE COPERTINE -->
         <div class="bookshelf-container reveal">
             <div class="bookshelf-track" role="tablist" aria-label="Progetti editoriali">
  
-                <div class="book-item active" role="tab" tabindex="0" aria-selected="true" data-target="book-tesi" data-title="Forma e Caos" id="tab-book-tesi" aria-controls="book-tesi">
+                <div class="book-item active" role="tab" tabindex="0" aria-selected="true" data-target="book-tesi" data-title="Forma e Caos">
                     <img width="552" height="452" loading="lazy" decoding="async" src="assets/editorial/tesi/copertinatesi.webp" alt="Copertina della tesi di laurea Forma e Caos">
                 </div>
  
-                <div class="book-item" role="tab" tabindex="0" aria-selected="false" data-target="book-citta" data-title="Città Fantasma" id="tab-book-citta" aria-controls="book-citta">
+                <div class="book-item" role="tab" tabindex="0" aria-selected="false" data-target="book-citta" data-title="Città Fantasma">
                     <img width="1468" height="1101" loading="lazy" decoding="async" src="assets/editorial/citta/copertinacitta.webp" alt="Copertina di Città Fantasma">
                 </div>
  
-                <div class="book-item" role="tab" tabindex="0" aria-selected="false" data-target="book-haiku" data-title="Haiku" id="tab-book-haiku" aria-controls="book-haiku">
+                <div class="book-item" role="tab" tabindex="0" aria-selected="false" data-target="book-haiku" data-title="Haiku">
                     <img width="1200" height="1600" loading="lazy" decoding="async" src="assets/editorial/haiku/copertinahaiku.webp" alt="Copertina di Haiku">
                 </div>
  
-                <div class="book-item" role="tab" tabindex="0" aria-selected="false" data-target="book-erbario" data-title="Erbario Tascabile" id="tab-book-erbario" aria-controls="book-erbario">
+                <div class="book-item" role="tab" tabindex="0" aria-selected="false" data-target="book-erbario" data-title="Erbario Tascabile">
                     <img width="1200" height="1600" loading="lazy" decoding="async" src="assets/editorial/erbario/copertinaerbario.webp" alt="Copertina di Erbario Tascabile">
                 </div>
  
@@ -288,7 +294,7 @@
         <div class="reading-table reveal" id="reading-table">
  
             <!-- Dettaglio Tesi -->
-            <div id="book-tesi" class="book-detail-pane active" role="tabpanel" aria-labelledby="tab-book-tesi">
+            <div id="book-tesi" class="book-detail-pane active" role="tabpanel">
                 <div class="book-info">
                     <h3 class="ed-project-title">Forma e Caos</h3>
                     <span class="ed-project-type">Tesi di Laurea / Experimental Book Design</span>
@@ -327,7 +333,7 @@
             </div>
  
                <!-- Dettaglio Città Fantasma -->
-<div id="book-citta" class="book-detail-pane" role="tabpanel" aria-labelledby="tab-book-citta">
+<div id="book-citta" class="book-detail-pane" role="tabpanel">
     <div class="book-info">
         <h3 class="ed-project-title">Città Fantasma</h3>
         <span class="ed-project-type">Photobook / Saggistica Visiva</span>
@@ -371,7 +377,7 @@
 </div>
  
             <!-- Dettaglio Haiku -->
-            <div id="book-haiku" class="book-detail-pane" role="tabpanel" aria-labelledby="tab-book-haiku">
+            <div id="book-haiku" class="book-detail-pane" role="tabpanel">
                 <div class="book-info">
                     <h3 class="ed-project-title">Haiku delle quattro stagioni</h3>
                     <span class="ed-project-type">Libro Illustrato</span>
@@ -401,7 +407,7 @@
             </div>
  
             <!-- Dettaglio Erbario -->
-            <div id="book-erbario" class="book-detail-pane" role="tabpanel" aria-labelledby="tab-book-erbario">
+            <div id="book-erbario" class="book-detail-pane" role="tabpanel">
                 <div class="book-info">
                     <h3 class="ed-project-title">Erbario Tascabile</h3>
                     <span class="ed-project-type">Catalogazione Botanica</span>
@@ -523,7 +529,7 @@
                     <div class="browser-window">
                         <div class="browser-top-bar">
                             <div class="mac-dots" aria-hidden="true"><span></span><span></span><span></span></div>
-                            <div class="browser-url">rifiutispaziali.ilariamariatest.workers.dev</div>
+                            <div class="browser-url">rifiutispaziali.it</div>
                         </div>
                         <img width="1800" height="1025" loading="lazy" decoding="async" src="assets/site/rifiutispaziali.webp" alt="Anteprima del progetto Rifiuti Spaziali">
                         <div class="hover-overlay">
@@ -589,7 +595,6 @@
         </div>
 
         <div class="draw-carousel-container reveal">
-            <div class="ux-gallery-status" data-gallery="socialTrack" hidden></div>
             <div class="draw-carousel-track" id="socialTrack">
              
                 <!-- RUSPANTE -->
@@ -1143,8 +1148,7 @@
             <h3>Calendario 2026</h3>
         </div>
 
-        <div class="ux-gallery-status" data-gallery="calendar" hidden></div>
-        <div class="calendar-strip reveal" id="calendarTrack" tabindex="0" aria-label="Calendario 2026: scorri per sfogliare i mesi">
+        <div class="calendar-strip reveal" tabindex="0" aria-label="Calendario 2026: scorri per sfogliare i mesi">
             <figure class="calendar-card">
                 <div class="ephemera-frame">
                     <img width="798" height="1579" loading="lazy" decoding="async" src="assets/visual/calendario/calendario-copertina.webp" alt="Calendario 2026, copertina" class="zoomable">
@@ -1228,7 +1232,6 @@
         </div>
  
         <div class="draw-carousel-container reveal">
-            <div class="ux-gallery-status" data-gallery="drawTrack" hidden></div>
             <div class="draw-carousel-track" id="drawTrack">
                 <!-- 01. La casa di Chef -->
                 <figure class="draw-card">
@@ -1406,7 +1409,6 @@
         </div>
     </footer>
  
-    <a class="ux-back-top" href="#hero" aria-label="Torna all’inizio" hidden>↑</a>
     <!-- ==========================================
          JAVASCRIPT
          ========================================== -->

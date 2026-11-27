@@ -13,14 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
         let previous = null;
         el.addEventListener('pointerdown', e => {
             if (e.pointerType !== 'mouse' || e.button !== 0 || !canDrag() ||
-                e.target.closest('button, input, select, textarea') ||
-                (e.target.closest('.page-slider') && !el.matches('.page-slider'))) return;
+                e.target.closest('button, input, select, textarea')) return;
+            e.stopPropagation();
+            window.addEventListener('pointermove', move, { passive: false });
+            window.addEventListener('pointerup', up);
+            window.addEventListener('pointercancel', cancel);
             start = { x: e.clientX, y: e.clientY, id: e.pointerId, left: el.scrollLeft };
             dragged = false;
             suppressClick = false;
         });
         el.addEventListener('dragstart', e => { if (start) e.preventDefault(); });
-        window.addEventListener('pointermove', e => {
+        const move = e => {
             if (!start || e.pointerId !== start.id) return;
             const dx = e.clientX - start.x, dy = e.clientY - start.y;
             if (!dragged) {
@@ -34,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             e.preventDefault();
             onDrag(dx, start.left);
-        }, { passive: false });
+        };
         const finish = (e, cancelled = false) => {
             if (!start || e.pointerId !== start.id) return;
             if (dragged) {
@@ -45,9 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             start = null;
             dragged = false;
+            window.removeEventListener('pointermove', move);
+            window.removeEventListener('pointerup', up);
+            window.removeEventListener('pointercancel', cancel);
         };
-        window.addEventListener('pointerup', e => finish(e));
-        window.addEventListener('pointercancel', e => finish(e, true));
+        const up = e => finish(e);
+        const cancel = e => finish(e, true);
         el.addEventListener('click', e => {
             if (!suppressClick) return;
             suppressClick = false;
@@ -57,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el.addEventListener('pointerdown', () => { suppressClick = false; }, true);
     }
 
-    document.querySelectorAll('.draw-carousel-track, .calendar-strip, .edge-slider, .bookshelf-container, .horizontal-track').forEach(el => {
+    document.querySelectorAll('#socialTrack, #drawTrack, .draw-carousel-track, .calendar-strip, .edge-slider, .bookshelf-container, .horizontal-track').forEach(el => {
         enableMouseDrag(el, (dx, left) => { el.scrollLeft = left - dx; }, null,
             () => el.scrollWidth > el.clientWidth + 2 && /auto|scroll/.test(getComputedStyle(el).overflowX));
     });
@@ -157,8 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const hero = document.getElementById('hero');
     const floatingImgs = document.querySelectorAll('.floating-img');
 
-    if (hero && floatingImgs.length > 0 &&
-        window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) {
+    if (hero && floatingImgs.length > 0) {
         onScroll.push(() => {
             const scrollY = window.scrollY;
             
@@ -362,7 +367,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const on = b === item;
                 b.classList.toggle('active', on);
                 b.setAttribute('aria-selected', String(on));
-                b.tabIndex = on ? 0 : -1;
             });
             bookPanes.forEach(p => p.classList.remove('active'));
 
@@ -375,23 +379,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (rect.top >= 0 && rect.top < window.innerHeight * 0.6) return;
 
             setTimeout(() => {
-                const offset = readingTable.getBoundingClientRect().top + window.scrollY - 100;
+                const offset = rect.top + window.scrollY - 100;
                 window.scrollTo({ top: offset, behavior: 'smooth' });
             }, 120);
         };
 
-        bookItems.forEach((item, index) => {
-            item.tabIndex = item.classList.contains('active') ? 0 : -1;
+        bookItems.forEach(item => {
             item.addEventListener('click', () => selectBook(item, true));
             item.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     selectBook(item, true);
-                } else if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
-                    e.preventDefault();
-                    const next = e.key === 'Home' ? 0 : e.key === 'End' ? bookItems.length - 1 : (index + (e.key === 'ArrowRight' ? 1 : -1) + bookItems.length) % bookItems.length;
-                    selectBook(bookItems[next], false);
-                    bookItems[next].focus();
                 }
             });
         });
@@ -531,16 +529,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const prev = makeBtn(-1);
         const next = makeBtn(1);
 
-        const arrowsHidden = window.matchMedia('(max-width: 900px), (hover: none)');
-        const sync = (position = true) => {
-            if (arrowsHidden.matches) return;
+        const sync = () => {
             const max = slider.scrollWidth - slider.clientWidth;
             const hidden = max <= 2;
             [prev, next].forEach(b => b.classList.toggle('is-hidden', hidden));
             prev.disabled = slider.scrollLeft <= 2;
             next.disabled = slider.scrollLeft >= max - 2;
 
-            if (!position) return;
             // posiziona le frecce sui bordi dello slider, a metà altezza
             const top = slider.offsetTop + slider.offsetHeight / 2 - 24;
             prev.style.top = next.style.top = top + 'px';
@@ -548,12 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
             next.style.left = (slider.offsetLeft + slider.offsetWidth - 14 - 48) + 'px';
         };
 
-        let arrowFrame = false;
-        slider.addEventListener('scroll', () => {
-            if (arrowsHidden.matches || arrowFrame) return;
-            arrowFrame = true;
-            requestAnimationFrame(() => { arrowFrame = false; sync(false); });
-        }, { passive: true });
+        slider.addEventListener('scroll', sync, { passive: true });
         window.addEventListener('resize', sync);
         window.addEventListener('load', sync);
         slider.querySelectorAll('img').forEach(img => img.addEventListener('load', sync));
@@ -576,9 +566,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (zoomImgs.length) {
         const lb = document.createElement('div');
         lb.className = 'lightbox';
-        lb.setAttribute('role', 'dialog');
-        lb.setAttribute('aria-modal', 'true');
-        lb.setAttribute('aria-label', 'Ingrandimento immagine');
         lb.innerHTML = '<img alt=""><button class="lb-close" aria-label="Chiudi">✕</button><button class="lb-prev" aria-label="Precedente">←</button><button class="lb-next" aria-label="Successiva">→</button>';
         document.body.appendChild(lb);
         const big = lb.querySelector('img');
@@ -595,14 +582,9 @@ document.addEventListener('DOMContentLoaded', () => {
             big.alt = zoomImgs[idx].alt || 'Ingrandimento'; 
         };
 
-        let opener = null;
-        const close = () => { lb.classList.remove('open'); document.body.classList.remove('lb-open'); opener?.focus({preventScroll:true}); };
+        const close = () => { lb.classList.remove('open'); document.body.classList.remove('lb-open'); };
         zoomImgs.forEach((img, n) => { 
-            img.tabIndex = 0;
-            img.setAttribute('role', 'button');
-            const open = () => { opener = img; show(n); lb.classList.add('open'); document.body.classList.add('lb-open'); lb.querySelector('.lb-close').focus(); };
-            img.addEventListener('click', open);
-            img.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } }); 
+            img.addEventListener('click', () => { show(n); lb.classList.add('open'); document.body.classList.add('lb-open'); }); 
         });
 
         lb.querySelector('.lb-close').onclick = close;
@@ -619,11 +601,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('keydown', e => {
             if (!lb.classList.contains('open')) return;
             if (e.key === 'Escape') close();
-            if (e.key === 'Tab') {
-                const buttons = Array.from(lb.querySelectorAll('button'));
-                const i = buttons.indexOf(document.activeElement);
-                e.preventDefault(); buttons[(i + (e.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus();
-            }
             if (e.key === 'ArrowRight') show(idx + 1);
             if (e.key === 'ArrowLeft') show(idx - 1);
         });
@@ -763,67 +740,61 @@ document.addEventListener('DOMContentLoaded', () => {
             quoteElement.appendChild(item);
         });
 
-        const items = quoteElement.querySelectorAll('.quote-item');
-        let current = 0;
-
-        if (items.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            setInterval(() => {
-                items[current].classList.remove('is-active');
-                items[current].setAttribute('aria-hidden', 'true');
-                current = (current + 1) % items.length;
-                items[current].classList.add('is-active');
-                items[current].removeAttribute('aria-hidden');
-            }, 5000);
+        const items = Array.from(quoteElement.querySelectorAll('.quote-item'));
+        // Wrap the existing quote text, preserving line breaks and attribution.
+        items.forEach(item => {
+            const author = item.querySelector('.italic-accent');
+            if (!author) return;
+            const copy = document.createElement('span');
+            copy.className = 'quote-copy';
+            while (item.firstChild && item.firstChild !== author) copy.appendChild(item.firstChild);
+            item.insertBefore(copy, author);
+        });
+        const section = quoteElement.closest('.manifesto-section');
+        const controls = section?.querySelector('.manifesto-controls');
+        const pause = controls?.querySelector('.manifesto-pause');
+        const next = controls?.querySelector('.manifesto-next');
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+        let current = 0, visible = false, paused = false, timer = null;
+        function stop() {
+            clearTimeout(timer);
+            timer = null;
+            section?.classList.remove('quote-playing');
+        }
+        function schedule() {
+            stop();
+            if (!visible || paused || reduced.matches || document.hidden) return;
+            section?.classList.add('quote-playing');
+            timer = setTimeout(advance, 7000);
+        }
+        function advance() {
+            items[current].classList.remove('is-active');
+            items[current].setAttribute('aria-hidden', 'true');
+            current = (current + 1) % items.length;
+            items[current].classList.add('is-active');
+            items[current].removeAttribute('aria-hidden');
+            schedule();
+        }
+        if (controls && items.length > 1) {
+            controls.hidden = false;
+            pause.hidden = reduced.matches;
+            pause.addEventListener('click', () => {
+                paused = !paused;
+                pause.textContent = paused ? '▷' : 'Ⅱ';
+                pause.setAttribute('aria-label', paused ? 'Riprendi le citazioni' : 'Metti in pausa le citazioni');
+                schedule();
+            });
+            next.addEventListener('click', advance);
+            if ('IntersectionObserver' in window) {
+                new IntersectionObserver(([entry]) => {
+                    visible = entry.isIntersecting;
+                    schedule();
+                }, { threshold: 0.15 }).observe(section);
+            } else { visible = true; schedule(); }
+            document.addEventListener('visibilitychange', schedule);
+            reduced.addEventListener?.('change', () => { pause.hidden = reduced.matches; schedule(); });
         }
     }
-
-    // UX: indicatori indipendenti dalla geometria delle gallerie.
-    const reducedUX = window.matchMedia('(prefers-reduced-motion: reduce)');
-    document.querySelectorAll('.ux-gallery-status').forEach(status => {
-        const calendar = status.dataset.gallery === 'calendar';
-        const track = document.getElementById(calendar ? 'calendarTrack' : status.dataset.gallery);
-        if (!track || !track.children.length) return;
-        const cards = Array.from(track.children);
-        status.innerHTML = '<span class="ux-gallery-hint"></span><span class="ux-gallery-count"></span><span class="ux-gallery-progress" aria-hidden="true"><i></i></span>';
-        const hint = status.querySelector('.ux-gallery-hint');
-        const count = status.querySelector('.ux-gallery-count');
-        const fill = status.querySelector('i');
-        const phone = window.matchMedia('(hover: none)');
-        let pending = false;
-        function update() {
-            pending = false;
-            const max = track.scrollWidth - track.clientWidth;
-            status.hidden = max <= 2;
-            if (max <= 2) return;
-            const rect = track.getBoundingClientRect();
-            const center = rect.left + rect.width / 2;
-            let current = 0, distance = Infinity;
-            cards.forEach((card, i) => {
-                const r = card.getBoundingClientRect();
-                const d = Math.abs(r.left + r.width / 2 - center);
-                if (d < distance) { distance = d; current = i; }
-            });
-            if (track.scrollLeft <= 2) current = 0;
-            if (track.scrollLeft >= max - 2) current = cards.length - 1;
-            hint.textContent = phone.matches ? '↔ Scorri per esplorare' : '↔ Trascina per esplorare';
-            count.textContent = `${String(current + 1).padStart(2, '0')} / ${cards.length}`;
-            fill.style.transform = `scaleX(${(current + 1) / cards.length})`;
-        }
-        const schedule = () => { if (!pending) { pending = true; requestAnimationFrame(update); } };
-        track.addEventListener('scroll', schedule, { passive: true });
-        window.addEventListener('resize', schedule, { passive: true });
-        window.addEventListener('load', schedule);
-        if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(track);
-        if (!track.hasAttribute('tabindex')) track.tabIndex = 0;
-        track.addEventListener('keydown', e => {
-            if (e.target !== track || !['ArrowLeft','ArrowRight'].includes(e.key)) return;
-            e.preventDefault();
-            track.scrollBy({left: (e.key === 'ArrowRight' ? 1 : -1) * track.clientWidth * .85, behavior: reducedUX.matches ? 'instant' : 'smooth'});
-        });
-        update();
-    });
-    const backTop = document.querySelector('.ux-back-top');
-    if (backTop) onScroll.push(() => { backTop.hidden = window.scrollY < window.innerHeight * 2; });
 
     // ==========================================
     // 11. AVVIO

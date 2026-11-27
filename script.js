@@ -792,6 +792,8 @@ document.addEventListener('DOMContentLoaded', () => {
         function schedule() {
             stop();
             if (!visible || paused || reduced.matches || document.hidden) return;
+            // Riavvia anche la barra comune a ogni cambio.
+            void controls.offsetWidth;
             section?.classList.add('quote-playing');
             timer = setTimeout(advance, current === 3 ? 14000 : current === 4 ? 10000 : 8000);
             section.style.setProperty('--poster-duration', current === 3 ? '14s' : current === 4 ? '10s' : '8s');
@@ -818,9 +820,10 @@ document.addEventListener('DOMContentLoaded', () => {
             prev?.addEventListener('click', () => advance(-1));
             if ('IntersectionObserver' in window) {
                 new IntersectionObserver(([entry]) => {
+                    if (visible === entry.isIntersecting) return;
                     visible = entry.isIntersecting;
                     schedule();
-                }, { threshold: 0.15 }).observe(section);
+                }, { threshold: 0 }).observe(quoteElement);
             } else { visible = true; schedule(); }
             document.addEventListener('visibilitychange', schedule);
             reduced.addEventListener?.('change', () => { pause.hidden = reduced.matches; schedule(); });
@@ -830,6 +833,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 11. AVVIO
     // ==========================================
+    const backTop = document.querySelector('.ux-back-top');
+    if (backTop) {
+        const heroTop = document.getElementById('hero');
+        if (heroTop && 'IntersectionObserver' in window) {
+            new IntersectionObserver(([entry]) => { backTop.hidden = entry.isIntersecting; }).observe(heroTop);
+        } else { backTop.hidden = false; }
+    }
     window.addEventListener('scroll', scheduleScroll, { passive: true });
     onScroll.forEach(fn => fn());
 

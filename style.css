@@ -2319,15 +2319,15 @@ body.lb-open { overflow: hidden; }
 .manifesto-text .quote-copy > br:last-child { display:none; }
 .manifesto-text .quote-item .italic-accent { position:relative; display:block; font-family:var(--font-body); font-style:normal; font-size:clamp(.8rem,1.5vw,1.05rem); line-height:1.4; letter-spacing:.05em; margin-top:1.5rem; color:inherit; }
 .poster-accent { font-weight:500; font-style:italic; }
-.quote-item[data-poster="1"] { background:var(--bg-white); text-align:left; align-items:flex-start; }
-.quote-item[data-poster="1"] .poster-accent { display:block; font-size:1.25em; }
-.quote-item[data-poster="2"] { background:var(--accent-dark); color:var(--bg-pink); }
-.quote-item[data-poster="2"] .poster-accent { display:block; font-family:var(--font-pixel); font-style:normal; font-size:.8em; }
-.quote-item[data-poster="3"] { background:var(--accent-dark); color:var(--bg-pink); font-size:clamp(1.35rem,3vw,2.7rem); line-height:1.2; text-align:left; align-items:flex-start; }
-.quote-item[data-poster="3"] .poster-accent { font-size:1.15em; }
-.quote-item[data-poster="4"] { background:var(--bg-white); font-size:clamp(1.6rem,3.8vw,3.7rem); text-align:right; align-items:flex-end; }
-.quote-item[data-poster="5"] { background:var(--bg-pink); }
-.quote-item[data-poster="5"] .poster-accent { font-family:var(--font-pixel); font-style:normal; font-size:.8em; }
+.manifesto-text .quote-item[data-poster="1"] { background:var(--bg-white); text-align:left; align-items:flex-start; }
+.manifesto-text .quote-item[data-poster="1"] .poster-accent { display:block; font-size:1.25em; }
+.manifesto-text .quote-item[data-poster="2"] { background:var(--accent-dark); color:var(--bg-pink); }
+.manifesto-text .quote-item[data-poster="2"] .poster-accent { display:block; font-family:var(--font-pixel); font-style:normal; font-size:.8em; }
+.manifesto-text .quote-item[data-poster="3"] { background:var(--accent-dark); color:var(--bg-pink); font-size:clamp(1.35rem,3vw,2.7rem); line-height:1.2; text-align:left; align-items:flex-start; }
+.manifesto-text .quote-item[data-poster="3"] .poster-accent { font-size:1.15em; }
+.manifesto-text .quote-item[data-poster="4"] { background:var(--bg-white); font-size:clamp(1.6rem,3.8vw,3.7rem); text-align:right; align-items:flex-end; }
+.manifesto-text .quote-item[data-poster="5"] { background:var(--bg-pink); }
+.manifesto-text .quote-item[data-poster="5"] .poster-accent { font-family:var(--font-pixel); font-style:normal; font-size:.8em; }
 .manifesto-controls { display:flex; justify-content:center; align-items:center; gap:12px; margin:14px auto 0; color:var(--accent-dark); }
 .manifesto-controls[hidden], .manifesto-controls button[hidden] { display:none; }
 .manifesto-rule { width:clamp(60px,16vw,160px); height:1px; background:currentColor; transform-origin:left center; }
@@ -2344,3 +2344,31 @@ body.lb-open { overflow: hidden; }
 @keyframes poster-line { from { transform:scaleX(.03); } to { transform:scaleX(1); } }
 @media(max-width:768px) { .manifesto-section { padding:55px 7%; } .manifesto-text .quote-item { padding:28px 16px; } .manifesto-ornament { margin-bottom:14px; } }
 @media(prefers-reduced-motion:reduce) { .manifesto-text .quote-item { transition:none; } }
+
+/* Manifesti v2: composizioni distinte, movimento visibile, altezza stabile. */
+.manifesto-text .quote-item { --poster-x: 0px; --poster-y: 26px; --poster-angle: 0deg; }
+.manifesto-text .quote-item::before { opacity:.19; font-size:clamp(7rem,24vw,24rem); }
+.manifesto-text .quote-item::after { content:'✳'; position:absolute; right:5%; top:5%; font-family:var(--font-body); font-size:clamp(28px,5vw,70px); line-height:1; pointer-events:none; opacity:.65; }
+.manifesto-text .quote-item[data-poster="0"] { text-align:center; }
+.manifesto-text .quote-item[data-poster="1"] { --poster-x:-60px; --poster-y:0px; border-left:8px solid var(--accent-dark); }
+.manifesto-text .quote-item[data-poster="1"]::after { content:'—'; }
+.manifesto-text .quote-item[data-poster="2"] { --poster-y:55px; }
+.manifesto-text .quote-item[data-poster="2"] .poster-accent { font-size:1.05em; }
+.manifesto-text .quote-item[data-poster="3"] { --poster-x:55px; --poster-y:0px; background:var(--bg-pink); color:var(--accent-dark); border-bottom:8px solid currentColor; }
+.manifesto-text .quote-item[data-poster="4"] { --poster-x:60px; --poster-y:0px; }
+.manifesto-text .quote-item[data-poster="4"]::after { content:'♫'; left:5%; right:auto; }
+.manifesto-text .quote-item[data-poster="5"] { --poster-angle:-5deg; background:var(--accent-dark); color:var(--bg-pink); }
+.manifesto-text .quote-copy,.manifesto-text .italic-accent { z-index:1; }
+@media (prefers-reduced-motion:no-preference) {
+ .manifesto-section.quote-playing .quote-item.is-active .quote-copy { animation:poster-v2-enter 1.15s cubic-bezier(.16,1,.3,1) both; }
+ .manifesto-section.quote-playing .quote-item.is-active::before { animation:poster-v2-drift 4s ease-in-out infinite alternate; }
+ .manifesto-section.quote-playing .quote-item.is-active::after { animation:poster-v2-spin 7s linear infinite; }
+ .manifesto-section.quote-playing .quote-item.is-active .poster-accent { display:inline-block; animation:poster-v2-accent 1.15s .15s both; }
+}
+@keyframes poster-v2-enter { from {opacity:0;transform:translate(var(--poster-x),var(--poster-y)) rotate(var(--poster-angle)) scale(.92);} to {opacity:1;transform:none;} }
+@keyframes poster-v2-drift { from {transform:translate(-72%,-50%) rotate(-5deg);} to {transform:translate(-28%,-50%) rotate(5deg);} }
+@keyframes poster-v2-spin { to {transform:rotate(360deg);} }
+@keyframes poster-v2-accent { from {opacity:.15;transform:translateY(12px) scale(.8);} to {opacity:1;transform:none;} }
+.ux-back-top[hidden] { display:none; }
+.ux-back-top { position:fixed; right:18px; bottom:calc(18px + env(safe-area-inset-bottom,0px)); z-index:900; width:44px; height:44px; display:grid; place-items:center; border:1px solid var(--accent-dark); border-radius:50%; background:var(--bg-paper); color:var(--accent-dark); text-decoration:none; font-size:1.3rem; }
+.ux-back-top:focus-visible {outline:2px solid currentColor;outline-offset:3px;}

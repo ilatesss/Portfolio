@@ -2279,3 +2279,50 @@ body.lb-open { overflow: hidden; }
 @media (max-width: 768px) and (hover: none) {
     .hero-container { min-height: 100svh; }
 }
+
+/* Rifiniture mobile: mensola Editorial e calendario. */
+.editorial-swipe-hint { display: none; }
+@media (max-width: 768px) {
+    #editorial .editorial-swipe-hint {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 4px;
+        color: var(--accent-dark);
+        font-family: var(--font-body);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    .editorial-swipe-hint span { font-size: 1.4rem; line-height: 1; }
+    #editorial .bookshelf-container {
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent-dark) transparent;
+        scroll-padding-inline: 4%;
+        overscroll-behavior-x: contain;
+    }
+    #editorial .bookshelf-container::-webkit-scrollbar { display: block; height: 3px; }
+    #editorial .bookshelf-container::-webkit-scrollbar-thumb { background: var(--accent-dark); border-radius: 4px; }
+    /* Misure riferite alla larghezza disponibile, non alla viewport. */
+    #archive .calendar-strip {
+        width: 100%;
+        min-width: 0;
+        gap: 12px !important;
+        padding: 10px 6px 20px !important;
+        scroll-padding-inline: 6px;
+    }
+    #archive .calendar-card { flex: 0 0 100% !important; min-width: 0; }
+    #archive .calendar-card .ephemera-frame {
+        aspect-ratio: 1 / 1;
+        display: grid;
+        place-items: center;
+    }
+    #archive .calendar-card .ephemera-frame img {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 0;
+        object-fit: contain;
+    }
+}
+@media (max-width: 768px) and (hover: none) {
+    #archive .calendar-card .ephemera-frame:hover { transform: none; }
+}

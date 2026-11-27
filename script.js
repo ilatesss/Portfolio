@@ -7,6 +7,60 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinksContainer = document.querySelector('.nav-links');
     const navScrim = document.querySelector('.nav-scrim');
 
+    // Trascinamento delle gallerie con mouse, senza interferire con il touch.
+    function enableMouseDrag(el, onDrag, onRelease, canDrag = () => true) {
+        let start = null, dragged = false, suppressClick = false;
+        let previous = null;
+        el.addEventListener('pointerdown', e => {
+            if (e.pointerType !== 'mouse' || e.button !== 0 || !canDrag() ||
+                e.target.closest('button, input, select, textarea')) return;
+            start = { x: e.clientX, y: e.clientY, id: e.pointerId, left: el.scrollLeft };
+            dragged = false;
+            suppressClick = false;
+        });
+        el.addEventListener('dragstart', e => { if (start) e.preventDefault(); });
+        window.addEventListener('pointermove', e => {
+            if (!start || e.pointerId !== start.id) return;
+            const dx = e.clientX - start.x, dy = e.clientY - start.y;
+            if (!dragged) {
+                if (Math.abs(dx) < 8 || Math.abs(dx) <= Math.abs(dy)) return;
+                dragged = true;
+                previous = [el.style.scrollBehavior, el.style.scrollSnapType, el.style.userSelect, el.style.cursor];
+                el.style.scrollBehavior = 'auto';
+                el.style.scrollSnapType = 'none';
+                el.style.userSelect = 'none';
+                el.style.cursor = 'grabbing';
+            }
+            e.preventDefault();
+            onDrag(dx, start.left);
+        }, { passive: false });
+        const finish = (e, cancelled = false) => {
+            if (!start || e.pointerId !== start.id) return;
+            if (dragged) {
+                const dx = e.clientX - start.x;
+                [el.style.scrollBehavior, el.style.scrollSnapType, el.style.userSelect, el.style.cursor] = previous;
+                suppressClick = !cancelled;
+                if (!cancelled) onRelease?.(dx);
+            }
+            start = null;
+            dragged = false;
+        };
+        window.addEventListener('pointerup', e => finish(e));
+        window.addEventListener('pointercancel', e => finish(e, true));
+        el.addEventListener('click', e => {
+            if (!suppressClick) return;
+            suppressClick = false;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+        }, true);
+        el.addEventListener('pointerdown', () => { suppressClick = false; }, true);
+    }
+
+    document.querySelectorAll('.draw-carousel-track, .calendar-strip, .edge-slider, .bookshelf-container, .horizontal-track').forEach(el => {
+        enableMouseDrag(el, (dx, left) => { el.scrollLeft = left - dx; }, null,
+            () => el.scrollWidth > el.clientWidth + 2 && /auto|scroll/.test(getComputedStyle(el).overflowX));
+    });
+
     // Listener di scroll ottimizzato
     const onScroll = [];
     let rafPending = false;
@@ -378,6 +432,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         nextBtn?.addEventListener('click', (e) => { e.preventDefault(); step(1); });
         prevBtn?.addEventListener('click', (e) => { e.preventDefault(); step(-1); });
+
+        // Con il mouse il trascinamento cambia pagina, come lo swipe touch.
+        enableMouseDrag(slider, () => {}, dx => {
+            if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1);
+        }, () => pages.length > 1);
 
         let pageStartX = 0, pageStartY = 0;
         let pageSwipe = false;

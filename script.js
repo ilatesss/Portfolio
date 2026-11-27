@@ -729,9 +729,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     if (quoteElement) {
-        // Tutte le frasi stanno nella STESSA cella della griglia (vedi .quote-item nel CSS):
-        // l'altezza della sezione è sempre quella della frase più lunga, quindi cambiando
-        // frase il testo sotto non si sposta mai.
         quotes.forEach(html => {
             const item = document.createElement('span');
             item.className = 'quote-item';
@@ -739,97 +736,61 @@ document.addEventListener('DOMContentLoaded', () => {
             item.innerHTML = html;
             quoteElement.appendChild(item);
         });
-
         const items = Array.from(quoteElement.querySelectorAll('.quote-item'));
-        // Wrap the existing quote text, preserving line breaks and attribution.
-        items.forEach(item => {
+        const section = quoteElement.closest('.manifesto-section');
+        const controls = section.querySelector('.manifesto-controls');
+        const pause = controls.querySelector('.manifesto-pause');
+        const index = section.querySelector('.manifesto-index');
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+        // Invisible original text reserves the final height, including on mobile.
+        const notes = items.map(item => {
             const author = item.querySelector('.italic-accent');
-            if (!author) return;
             const copy = document.createElement('span');
-            copy.className = 'quote-copy';
+            copy.className = 'note-reserve';
             while (item.firstChild && item.firstChild !== author) copy.appendChild(item.firstChild);
             item.insertBefore(copy, author);
+            const text = copy.textContent.trim().replace(/\s+/g, ' ');
+            const typed = document.createElement('span');
+            typed.className = 'note-typed';
+            typed.setAttribute('aria-hidden','true');
+            copy.setAttribute('aria-label', text);
+            item.insertBefore(typed, author);
+            return {item, author, typed, chars:Array.from(text)};
         });
-        // Un manifesto per citazione: testo originale, accento e parola di fondo.
-        const designs = [
-            ['CULTURE', 'codes of visual culture'], ['LESS', 'but better'],
-            ['ART', 'work of art'], ['DESIGN', 'opportunità'],
-            ['VIENNA', 'passion'], ['FIRE', 'on fire']
-        ];
-        items.forEach((item, i) => {
-            const [word, accent] = designs[i];
-            item.dataset.poster = String(i);
-            item.dataset.word = word;
-            const copy = item.querySelector('.quote-copy');
-            if (!copy) return;
-            const walker = document.createTreeWalker(copy, NodeFilter.SHOW_TEXT);
-            let node;
-            while ((node = walker.nextNode())) {
-                const pos = node.data.indexOf(accent);
-                if (pos < 0) continue;
-                const marked = node.splitText(pos);
-                marked.splitText(accent.length);
-                const em = document.createElement('em');
-                em.className = 'poster-accent';
-                marked.replaceWith(em);
-                em.appendChild(marked);
-                break;
-            }
-        });
-        const section = quoteElement.closest('.manifesto-section');
-        const controls = section?.querySelector('.manifesto-controls');
-        const pause = controls?.querySelector('.manifesto-pause');
-        const next = controls?.querySelector('.manifesto-next');
-        const prev = controls?.querySelector('.manifesto-prev');
-        const index = section?.querySelector('.manifesto-index');
-        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-        let current = 0, visible = false, paused = false, timer = null;
-        if (section) section.dataset.poster = String(current);
-        function stop() {
-            clearTimeout(timer);
-            timer = null;
-            section?.classList.remove('quote-playing');
+        let current = 0, pos = 0, deleting = false, visible = false, paused = false, timer;
+        function stop(){ clearTimeout(timer); section.classList.remove('note-running'); }
+        function canRun(){ return visible && !paused && !reduced.matches && !document.hidden; }
+        function render(){
+            const n = notes[current];
+            n.typed.textContent = n.chars.slice(0,pos).join('');
+            n.item.classList.toggle('note-complete', pos === n.chars.length && !deleting);
         }
-        function schedule() {
-            stop();
-            if (!visible || paused || reduced.matches || document.hidden) return;
-            // Riavvia anche la barra comune a ogni cambio.
-            void controls.offsetWidth;
-            section?.classList.add('quote-playing');
-            timer = setTimeout(advance, current === 3 ? 14000 : current === 4 ? 10000 : 8000);
-            section.style.setProperty('--poster-duration', current === 3 ? '14s' : current === 4 ? '10s' : '8s');
+        function select(i){
+            stop(); current = (i+notes.length)%notes.length; deleting=false; pos=0;
+            notes.forEach((n,j)=>{n.item.classList.toggle('is-active',j===current); if(j===current)n.item.removeAttribute('aria-hidden');else n.item.setAttribute('aria-hidden','true');});
+            index.textContent = `${String(current+1).padStart(2,'0')} / ${String(notes.length).padStart(2,'0')}`;
+            if(reduced.matches || paused) pos=notes[current].chars.length;
+            render(); resume();
         }
-        function advance(direction = 1) {
-            items[current].classList.remove('is-active');
-            items[current].setAttribute('aria-hidden', 'true');
-            current = (current + direction + items.length) % items.length;
-            if (section) section.dataset.poster = String(current);
-            if (index) index.textContent = `${String(current + 1).padStart(2, '0')} / ${String(items.length).padStart(2, '0')}`;
-            items[current].classList.add('is-active');
-            items[current].removeAttribute('aria-hidden');
-            schedule();
+        function tick(){
+            if(!canRun())return;
+            const n=notes[current];
+            if(!deleting && pos===n.chars.length){ deleting=true; timer=setTimeout(tick, Math.max(3000,n.chars.length*24)); return; }
+            if(deleting && pos===0){ select(current+1); return; }
+            pos+=deleting?-1:1; render();
+            const ch=n.chars[pos-1]||'';
+            timer=setTimeout(tick,deleting?19:/[,.!?;:]/.test(ch)?180:35+Math.random()*32);
         }
-        if (controls && items.length > 1) {
-            controls.hidden = false;
-            pause.hidden = reduced.matches;
-            pause.addEventListener('click', () => {
-                paused = !paused;
-                pause.textContent = paused ? '▷' : 'Ⅱ';
-                pause.setAttribute('aria-label', paused ? 'Riprendi le citazioni' : 'Metti in pausa le citazioni');
-                schedule();
-            });
-            next.addEventListener('click', () => advance());
-            prev?.addEventListener('click', () => advance(-1));
-            if ('IntersectionObserver' in window) {
-                new IntersectionObserver(([entry]) => {
-                    if (visible === entry.isIntersecting) return;
-                    visible = entry.isIntersecting;
-                    schedule();
-                }, { threshold: 0 }).observe(quoteElement);
-            } else { visible = true; schedule(); }
-            document.addEventListener('visibilitychange', schedule);
-            reduced.addEventListener?.('change', () => { pause.hidden = reduced.matches; schedule(); });
-        }
+        function resume(){stop();if(canRun()){section.classList.add('note-running');timer=setTimeout(tick,150);}}
+        controls.hidden=false;
+        pause.hidden=reduced.matches;
+        pause.addEventListener('click',()=>{paused=!paused;pause.textContent=paused?'▷':'Ⅱ';pause.setAttribute('aria-label',paused?'Riprendi le citazioni':'Metti in pausa le citazioni');resume();});
+        controls.querySelector('.manifesto-next').addEventListener('click',()=>select(current+1));
+        controls.querySelector('.manifesto-prev').addEventListener('click',()=>select(current-1));
+        if('IntersectionObserver' in window)new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;resume();},{threshold:0.1}).observe(section);else visible=true;
+        document.addEventListener('visibilitychange',resume);
+        reduced.addEventListener?.('change',()=>{pause.hidden=reduced.matches;select(current);});
+        select(0);
     }
 
     // ==========================================

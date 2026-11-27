@@ -139,3 +139,11 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
         max-height: 35dvh !important;
     }
 }
+
+/* Evita variazioni di altezza delle sezioni e delle immagini durante lo scroll. */
+@media (max-width: 900px) and (hover: none) {
+    .snap-section, .hero-content { min-height: 100svh; }
+    .split-image img { max-height: 35svh !important; }
+    .edge-slider img { height: 38svh !important; }
+    .collage-images img { max-height: 25svh; }
+}

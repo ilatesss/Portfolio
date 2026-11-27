@@ -2274,3 +2274,8 @@ body.lb-open { overflow: hidden; }
         padding: 12px 6% 4px !important; /* Meno spazio tra il testo e gli slider */
     }
 }
+
+/* Mobile: altezza stabile quando la barra del browser compare/scompare. */
+@media (max-width: 768px) and (hover: none) {
+    .hero-container { min-height: 100svh; }
+}

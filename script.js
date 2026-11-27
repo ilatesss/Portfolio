@@ -102,7 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const hero = document.getElementById('hero');
     const floatingImgs = document.querySelectorAll('.floating-img');
 
-    if (hero && floatingImgs.length > 0) {
+    if (hero && floatingImgs.length > 0 &&
+        window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) {
         onScroll.push(() => {
             const scrollY = window.scrollY;
             
@@ -378,18 +379,25 @@ document.addEventListener('DOMContentLoaded', () => {
         nextBtn?.addEventListener('click', (e) => { e.preventDefault(); step(1); });
         prevBtn?.addEventListener('click', (e) => { e.preventDefault(); step(-1); });
 
-        let pageStartX = 0;
+        let pageStartX = 0, pageStartY = 0;
+        let pageSwipe = false;
         // StopPropagation evita conflitti tra lo scorrimento della singola galleria e quello dell'intera sezione social
         slider.addEventListener('touchstart', (e) => { 
             e.stopPropagation();
-            pageStartX = e.changedTouches[0].screenX; 
+            pageSwipe = e.touches.length === 1;
+            pageStartX = e.changedTouches[0].screenX;
+            pageStartY = e.changedTouches[0].screenY;
         }, { passive: true });
         
         slider.addEventListener('touchend', (e) => {
             e.stopPropagation();
             const dx = e.changedTouches[0].screenX - pageStartX;
-            if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1);
+            const dy = e.changedTouches[0].screenY - pageStartY;
+            if (pageSwipe && Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) step(dx < 0 ? 1 : -1);
+            pageSwipe = false;
         }, { passive: true });
+
+        slider.addEventListener('touchcancel', () => { pageSwipe = false; }, { passive: true });
 
         const wake = () => {
             if (ready) return;
@@ -456,13 +464,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const prev = makeBtn(-1);
         const next = makeBtn(1);
 
-        const sync = () => {
+        const arrowsHidden = window.matchMedia('(max-width: 900px), (hover: none)');
+        const sync = (position = true) => {
+            if (arrowsHidden.matches) return;
             const max = slider.scrollWidth - slider.clientWidth;
             const hidden = max <= 2;
             [prev, next].forEach(b => b.classList.toggle('is-hidden', hidden));
             prev.disabled = slider.scrollLeft <= 2;
             next.disabled = slider.scrollLeft >= max - 2;
 
+            if (!position) return;
             // posiziona le frecce sui bordi dello slider, a metà altezza
             const top = slider.offsetTop + slider.offsetHeight / 2 - 24;
             prev.style.top = next.style.top = top + 'px';
@@ -470,7 +481,12 @@ document.addEventListener('DOMContentLoaded', () => {
             next.style.left = (slider.offsetLeft + slider.offsetWidth - 14 - 48) + 'px';
         };
 
-        slider.addEventListener('scroll', sync, { passive: true });
+        let arrowFrame = false;
+        slider.addEventListener('scroll', () => {
+            if (arrowsHidden.matches || arrowFrame) return;
+            arrowFrame = true;
+            requestAnimationFrame(() => { arrowFrame = false; sync(false); });
+        }, { passive: true });
         window.addEventListener('resize', sync);
         window.addEventListener('load', sync);
         slider.querySelectorAll('img').forEach(img => img.addEventListener('load', sync));

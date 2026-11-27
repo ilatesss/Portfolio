@@ -750,10 +750,38 @@ document.addEventListener('DOMContentLoaded', () => {
             while (item.firstChild && item.firstChild !== author) copy.appendChild(item.firstChild);
             item.insertBefore(copy, author);
         });
+        // Un manifesto per citazione: testo originale, accento e parola di fondo.
+        const designs = [
+            ['CULTURE', 'codes of visual culture'], ['LESS', 'but better'],
+            ['ART', 'work of art'], ['DESIGN', 'opportunità'],
+            ['VIENNA', 'passion'], ['FIRE', 'on fire']
+        ];
+        items.forEach((item, i) => {
+            const [word, accent] = designs[i];
+            item.dataset.poster = String(i);
+            item.dataset.word = word;
+            const copy = item.querySelector('.quote-copy');
+            if (!copy) return;
+            const walker = document.createTreeWalker(copy, NodeFilter.SHOW_TEXT);
+            let node;
+            while ((node = walker.nextNode())) {
+                const pos = node.data.indexOf(accent);
+                if (pos < 0) continue;
+                const marked = node.splitText(pos);
+                marked.splitText(accent.length);
+                const em = document.createElement('em');
+                em.className = 'poster-accent';
+                marked.replaceWith(em);
+                em.appendChild(marked);
+                break;
+            }
+        });
         const section = quoteElement.closest('.manifesto-section');
         const controls = section?.querySelector('.manifesto-controls');
         const pause = controls?.querySelector('.manifesto-pause');
         const next = controls?.querySelector('.manifesto-next');
+        const prev = controls?.querySelector('.manifesto-prev');
+        const index = section?.querySelector('.manifesto-index');
         const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
         let current = 0, visible = false, paused = false, timer = null;
         function stop() {
@@ -765,12 +793,14 @@ document.addEventListener('DOMContentLoaded', () => {
             stop();
             if (!visible || paused || reduced.matches || document.hidden) return;
             section?.classList.add('quote-playing');
-            timer = setTimeout(advance, 7000);
+            timer = setTimeout(advance, current === 3 ? 14000 : current === 4 ? 10000 : 8000);
+            section.style.setProperty('--poster-duration', current === 3 ? '14s' : current === 4 ? '10s' : '8s');
         }
-        function advance() {
+        function advance(direction = 1) {
             items[current].classList.remove('is-active');
             items[current].setAttribute('aria-hidden', 'true');
-            current = (current + 1) % items.length;
+            current = (current + direction + items.length) % items.length;
+            if (index) index.textContent = `${String(current + 1).padStart(2, '0')} / ${String(items.length).padStart(2, '0')}`;
             items[current].classList.add('is-active');
             items[current].removeAttribute('aria-hidden');
             schedule();
@@ -784,7 +814,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 pause.setAttribute('aria-label', paused ? 'Riprendi le citazioni' : 'Metti in pausa le citazioni');
                 schedule();
             });
-            next.addEventListener('click', advance);
+            next.addEventListener('click', () => advance());
+            prev?.addEventListener('click', () => advance(-1));
             if ('IntersectionObserver' in window) {
                 new IntersectionObserver(([entry]) => {
                     visible = entry.isIntersecting;

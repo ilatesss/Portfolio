@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let previous = null;
         el.addEventListener('pointerdown', e => {
             if (e.pointerType !== 'mouse' || e.button !== 0 || !canDrag() ||
-                e.target.closest('button, input, select, textarea')) return;
+                e.target.closest('button, input, select, textarea') ||
+                (e.target.closest('.page-slider') && !el.matches('.page-slider'))) return;
             start = { x: e.clientX, y: e.clientY, id: e.pointerId, left: el.scrollLeft };
             dragged = false;
             suppressClick = false;
@@ -361,6 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const on = b === item;
                 b.classList.toggle('active', on);
                 b.setAttribute('aria-selected', String(on));
+                b.tabIndex = on ? 0 : -1;
             });
             bookPanes.forEach(p => p.classList.remove('active'));
 
@@ -373,17 +375,23 @@ document.addEventListener('DOMContentLoaded', () => {
             if (rect.top >= 0 && rect.top < window.innerHeight * 0.6) return;
 
             setTimeout(() => {
-                const offset = rect.top + window.scrollY - 100;
+                const offset = readingTable.getBoundingClientRect().top + window.scrollY - 100;
                 window.scrollTo({ top: offset, behavior: 'smooth' });
             }, 120);
         };
 
-        bookItems.forEach(item => {
+        bookItems.forEach((item, index) => {
+            item.tabIndex = item.classList.contains('active') ? 0 : -1;
             item.addEventListener('click', () => selectBook(item, true));
             item.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     selectBook(item, true);
+                } else if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
+                    e.preventDefault();
+                    const next = e.key === 'Home' ? 0 : e.key === 'End' ? bookItems.length - 1 : (index + (e.key === 'ArrowRight' ? 1 : -1) + bookItems.length) % bookItems.length;
+                    selectBook(bookItems[next], false);
+                    bookItems[next].focus();
                 }
             });
         });
@@ -568,6 +576,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (zoomImgs.length) {
         const lb = document.createElement('div');
         lb.className = 'lightbox';
+        lb.setAttribute('role', 'dialog');
+        lb.setAttribute('aria-modal', 'true');
+        lb.setAttribute('aria-label', 'Ingrandimento immagine');
         lb.innerHTML = '<img alt=""><button class="lb-close" aria-label="Chiudi">✕</button><button class="lb-prev" aria-label="Precedente">←</button><button class="lb-next" aria-label="Successiva">→</button>';
         document.body.appendChild(lb);
         const big = lb.querySelector('img');
@@ -584,9 +595,14 @@ document.addEventListener('DOMContentLoaded', () => {
             big.alt = zoomImgs[idx].alt || 'Ingrandimento'; 
         };
 
-        const close = () => { lb.classList.remove('open'); document.body.classList.remove('lb-open'); };
+        let opener = null;
+        const close = () => { lb.classList.remove('open'); document.body.classList.remove('lb-open'); opener?.focus({preventScroll:true}); };
         zoomImgs.forEach((img, n) => { 
-            img.addEventListener('click', () => { show(n); lb.classList.add('open'); document.body.classList.add('lb-open'); }); 
+            img.tabIndex = 0;
+            img.setAttribute('role', 'button');
+            const open = () => { opener = img; show(n); lb.classList.add('open'); document.body.classList.add('lb-open'); lb.querySelector('.lb-close').focus(); };
+            img.addEventListener('click', open);
+            img.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } }); 
         });
 
         lb.querySelector('.lb-close').onclick = close;
@@ -603,6 +619,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('keydown', e => {
             if (!lb.classList.contains('open')) return;
             if (e.key === 'Escape') close();
+            if (e.key === 'Tab') {
+                const buttons = Array.from(lb.querySelectorAll('button'));
+                const i = buttons.indexOf(document.activeElement);
+                e.preventDefault(); buttons[(i + (e.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus();
+            }
             if (e.key === 'ArrowRight') show(idx + 1);
             if (e.key === 'ArrowLeft') show(idx - 1);
         });
@@ -755,6 +776,54 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 5000);
         }
     }
+
+    // UX: indicatori indipendenti dalla geometria delle gallerie.
+    const reducedUX = window.matchMedia('(prefers-reduced-motion: reduce)');
+    document.querySelectorAll('.ux-gallery-status').forEach(status => {
+        const calendar = status.dataset.gallery === 'calendar';
+        const track = document.getElementById(calendar ? 'calendarTrack' : status.dataset.gallery);
+        if (!track || !track.children.length) return;
+        const cards = Array.from(track.children);
+        status.innerHTML = '<span class="ux-gallery-hint"></span><span class="ux-gallery-count"></span><span class="ux-gallery-progress" aria-hidden="true"><i></i></span>';
+        const hint = status.querySelector('.ux-gallery-hint');
+        const count = status.querySelector('.ux-gallery-count');
+        const fill = status.querySelector('i');
+        const phone = window.matchMedia('(hover: none)');
+        let pending = false;
+        function update() {
+            pending = false;
+            const max = track.scrollWidth - track.clientWidth;
+            status.hidden = max <= 2;
+            if (max <= 2) return;
+            const rect = track.getBoundingClientRect();
+            const center = rect.left + rect.width / 2;
+            let current = 0, distance = Infinity;
+            cards.forEach((card, i) => {
+                const r = card.getBoundingClientRect();
+                const d = Math.abs(r.left + r.width / 2 - center);
+                if (d < distance) { distance = d; current = i; }
+            });
+            if (track.scrollLeft <= 2) current = 0;
+            if (track.scrollLeft >= max - 2) current = cards.length - 1;
+            hint.textContent = phone.matches ? '↔ Scorri per esplorare' : '↔ Trascina per esplorare';
+            count.textContent = `${String(current + 1).padStart(2, '0')} / ${cards.length}`;
+            fill.style.transform = `scaleX(${(current + 1) / cards.length})`;
+        }
+        const schedule = () => { if (!pending) { pending = true; requestAnimationFrame(update); } };
+        track.addEventListener('scroll', schedule, { passive: true });
+        window.addEventListener('resize', schedule, { passive: true });
+        window.addEventListener('load', schedule);
+        if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(track);
+        if (!track.hasAttribute('tabindex')) track.tabIndex = 0;
+        track.addEventListener('keydown', e => {
+            if (e.target !== track || !['ArrowLeft','ArrowRight'].includes(e.key)) return;
+            e.preventDefault();
+            track.scrollBy({left: (e.key === 'ArrowRight' ? 1 : -1) * track.clientWidth * .85, behavior: reducedUX.matches ? 'instant' : 'smooth'});
+        });
+        update();
+    });
+    const backTop = document.querySelector('.ux-back-top');
+    if (backTop) onScroll.push(() => { backTop.hidden = window.scrollY < window.innerHeight * 2; });
 
     // ==========================================
     // 11. AVVIO

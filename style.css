@@ -2306,3 +2306,18 @@ body.lb-open { overflow: hidden; }
     }
     #archive .calendar-card .ephemera-frame:hover { transform: none; }
 }
+
+/* UX: micro-indicazioni, feedback e accessibilità. Nessuna modifica alle schede del calendario. */
+.ux-gallery-status { display: grid; grid-template-columns: 1fr auto; gap: 7px 12px; align-items: center; margin: 0 0 12px; color: var(--accent-dark); font-size: .82rem; font-weight: 500; }
+.ux-gallery-status[hidden], .ux-back-top[hidden] { display: none; }
+.ux-gallery-count { font-variant-numeric: tabular-nums; }
+.ux-gallery-progress { grid-column: 1 / -1; height: 2px; background: var(--accent-glow); overflow: hidden; }
+.ux-gallery-progress i { display: block; height: 100%; background: var(--accent-dark); transform-origin: left center; }
+.ux-back-top { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 900; width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--accent-dark); border-radius: 50%; background: var(--bg-paper); color: var(--accent-dark); text-decoration: none; font-size: 1.3rem; }
+:where(a, button, [role="tab"], [tabindex]):focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 4px; }
+@media (max-width: 768px) {
+    #editorial .book-item.active img { outline: 2px solid var(--accent-dark); outline-offset: 3px; }
+    #editorial .bookshelf-container { scroll-snap-type: x proximity; }
+    .has-sections .nav-item.active { font-weight: 600; }
+    .ux-back-top { right: 12px; }
+}

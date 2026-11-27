@@ -1346,11 +1346,6 @@ width: clamp(500px, 85%, 980px);
 .calendar-card { flex: 0 0 auto; margin: 0; scroll-snap-align: start; }
 .calendar-card .ephemera-frame img { width: auto; height: clamp(260px, 46vh, 440px); max-width: none; }
 .calendar-note { margin: 4px 0 0; }
-@media (max-width: 768px) {
-    .calendar-strip { gap: 20px; }
-    /* su telefono si dimensiona in larghezza: ogni mese occupa quasi tutto lo schermo e si legge */
-    .calendar-card .ephemera-frame img { width: 76vw; height: auto; }
-}
 
 /* --------------------------------------------------------------------------
    9. PLACEHOLDER / IN ARRIVO
@@ -2219,34 +2214,6 @@ body.lb-open { overflow: hidden; }
     /* L'email non va a capo a metà indirizzo sugli schermi stretti (320-360px) */
     .contact-email { font-size: min(1.9rem, 7.4vw); }
 }
-@media (max-width: 768px) {
-    /* ... (lascia intatte le altre regole mobile che hai qui) ... */
-
-    /* CALENDARIO: Centratura matematica al millimetro */
-    .calendar-strip { 
-        gap: 4vw !important;
-        padding: 10px 5vw 20px 5vw !important; 
-        scroll-snap-type: x mandatory !important;
-    }
-    
-    .calendar-card {
-        flex: 0 0 90vw !important; /* La card occupa esattamente il 90% dello schermo */
-        scroll-snap-align: center !important; /* Si aggancia al centro, non a sinistra */
-        margin: 0 !important;
-    }
-    
-    .calendar-card .ephemera-frame {
-        width: 100% !important;
-        padding: 6px !important; 
-        box-sizing: border-box !important;
-    }
-    
-    .calendar-card .ephemera-frame img { 
-        width: 100% !important; 
-        height: auto !important; 
-        margin: 0 auto !important;
-    }
-}
 @media (max-width: 900px) {
     /* --- TITOLI PIÙ COMPATTI E VICINI --- */
     :root { 
@@ -2302,27 +2269,40 @@ body.lb-open { overflow: hidden; }
     }
     #editorial .bookshelf-container::-webkit-scrollbar { display: block; height: 3px; }
     #editorial .bookshelf-container::-webkit-scrollbar-thumb { background: var(--accent-dark); border-radius: 4px; }
-    /* Misure riferite alla larghezza disponibile, non alla viewport. */
+    /* Calendario: una scheda per viewport del carosello, senza dimensioni intrinseche. */
     #archive .calendar-strip {
+        display: flex;
+        align-items: start;
         width: 100%;
         min-width: 0;
-        gap: 12px !important;
-        padding: 10px 6px 20px !important;
-        scroll-padding-inline: 6px;
+        gap: 12px;
+        padding: 10px 0 20px;
+        scroll-padding-inline: 0;
+        scroll-snap-type: x mandatory;
+        overscroll-behavior-x: contain;
     }
-    #archive .calendar-card { flex: 0 0 100% !important; min-width: 0; }
+    #archive .calendar-card {
+        flex: 0 0 100%;
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+        scroll-snap-align: start;
+    }
     #archive .calendar-card .ephemera-frame {
+        position: relative;
+        width: 100%;
         aspect-ratio: 1 / 1;
-        display: grid;
-        place-items: center;
+        padding: 0;
+        overflow: hidden;
     }
     #archive .calendar-card .ephemera-frame img {
-        width: 100% !important;
-        height: 100% !important;
-        min-height: 0;
+        position: absolute;
+        inset: 6px;
+        width: calc(100% - 12px);
+        height: calc(100% - 12px);
+        max-width: 100%;
         object-fit: contain;
+        margin: 0;
     }
-}
-@media (max-width: 768px) and (hover: none) {
     #archive .calendar-card .ephemera-frame:hover { transform: none; }
 }
